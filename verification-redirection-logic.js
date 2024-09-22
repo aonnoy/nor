@@ -34,21 +34,21 @@ const checkUserStatusAndRedirect = () => {
     } else {
         // auth_token is present, check localStorage keys
         const verificationStatus = localStorage.getItem('verification-status') === 'true';
-        const membershipActive = localStorage.getItem('membership-active') === 'true';
+        const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
         const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
 
         // Handle redirection logic based on localStorage values
         if (!verificationStatus) {
             // If verification-status is false, no redirection is needed
             return;
-        } else if (verificationStatus && !membershipActive && !onboardingStatus) {
-            // If verification-status is true, but membership-active is false and onboarding-status is false
+        } else if (verificationStatus && !dashboardAccess && !onboardingStatus) {
+            // If verification-status is true, but dashboard-access is false and onboarding-status is false
             handleRedirection('/membership/pick-a-plan');
-        } else if (membershipActive && !onboardingStatus) {
-            // If membership-active is true and onboarding-status is false
+        } else if (dashboardAccess && !onboardingStatus) {
+            // If dashboard-access is true and onboarding-status is false
             handleRedirection('/auth/onboarding');
-        } else if (membershipActive && onboardingStatus && verificationStatus) {
-            // If membership-active, onboarding-status, and verification-status are all true
+        } else if (dashboardAccess && onboardingStatus && verificationStatus) {
+            // If dashboard-access, onboarding-status, and verification-status are all true
             handleRedirection('/dashboard/home');
         }
     }
