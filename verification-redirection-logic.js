@@ -47,6 +47,9 @@ const checkUserStatusAndRedirect = () => {
         } else if (dashboardAccess && !onboardingStatus) {
             // If dashboard-access is true and onboarding-status is false
             handleRedirection('/auth/onboarding');
+        } else if (!dashboardAccess && onboardingStatus && verificationStatus) {
+            // If dashboard-access is false, but onboarding-status and verification-status are true
+            handleRedirection('/membership/pick-a-plan');
         } else if (dashboardAccess && onboardingStatus && verificationStatus) {
             // If dashboard-access, onboarding-status, and verification-status are all true
             handleRedirection('/dashboard/home');
@@ -56,3 +59,4 @@ const checkUserStatusAndRedirect = () => {
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
+
