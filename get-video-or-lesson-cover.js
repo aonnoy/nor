@@ -1,4 +1,3 @@
-
   // Function to get the auth token from the cookie
   function getAuthToken() {
     const name = "auth_token=";
@@ -35,6 +34,9 @@
   // Get course_slug and lesson_slug from URL params (handles both normal and proxied URLs)
   const courseSlug = getUrlParameter("course");
   const lessonSlug = getUrlParameter("lesson");
+
+  // Check if we are inside Wized (URL contains 'server.wized.com')
+  const isInsideWized = window.location.hostname.includes("server.wized.com");
 
   if (!authToken || !courseSlug || !lessonSlug) {
     console.error("Missing required information: Auth token, course_slug, or lesson_slug");
@@ -109,9 +111,13 @@
       if (courseLinkElement) {
         courseLinkElement.textContent = courseName; // Set the text to course_name
 
-        // Use proxy URL with fully-qualified URL (like the working example)
+        // Check if inside Wized and set the appropriate URL
         const fullCourseUrl = `https://nor-staging.webflow.io/dashboard/course?course=${courseSlug}`;
-        courseLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullCourseUrl)}`;
+        if (isInsideWized) {
+          courseLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullCourseUrl)}`;
+        } else {
+          courseLinkElement.href = fullCourseUrl;
+        }
       }
 
       // Set the lesson name and current URL in the breadcrumb
@@ -119,13 +125,16 @@
       if (activeLinkElement) {
         activeLinkElement.textContent = lessonName; // Set the text to lesson_name
 
-        // Use proxy URL with fully-qualified URL (like the working example)
+        // Check if inside Wized and set the appropriate URL
         const fullLessonUrl = `https://nor-staging.webflow.io/dashboard/lesson?course=${courseSlug}&lesson=${lessonSlug}`;
-        activeLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullLessonUrl)}`;
+        if (isInsideWized) {
+          activeLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullLessonUrl)}`;
+        } else {
+          activeLinkElement.href = fullLessonUrl;
+        }
       }
     })
     .catch(error => {
       console.error("Error occurred while fetching or processing the API response", error);
     });
   }
-
