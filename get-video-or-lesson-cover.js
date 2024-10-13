@@ -1,4 +1,5 @@
-// Function to get the auth token from the cookie
+
+  // Function to get the auth token from the cookie
   function getAuthToken() {
     const name = "auth_token=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -12,16 +13,26 @@
     return null;
   }
 
-  // Function to get URL parameters
+  // Function to get URL parameters, including proxied URLs
   function getUrlParameter(name) {
     const params = new URLSearchParams(window.location.search);
-    return params.get(name);
+    let paramValue = params.get(name);
+
+    // Check if the URL is being proxied by Wized (e.g., includes 'url=' in the query)
+    if (!paramValue && params.get('url')) {
+      // Decode the proxied URL and extract parameters from it
+      const proxiedUrl = decodeURIComponent(params.get('url'));
+      const proxiedParams = new URLSearchParams(proxiedUrl.split('?')[1]);
+      paramValue = proxiedParams.get(name);
+    }
+
+    return paramValue;
   }
 
   // Get the auth token from the cookie
   const authToken = getAuthToken();
   
-  // Get course_slug and lesson_slug from URL params
+  // Get course_slug and lesson_slug from URL params (handles both normal and proxied URLs)
   const courseSlug = getUrlParameter("course");
   const lessonSlug = getUrlParameter("lesson");
 
@@ -97,17 +108,24 @@
       const courseLinkElement = document.querySelector('[wized="dashboard_lesson_breadCrumb_courseLink"]');
       if (courseLinkElement) {
         courseLinkElement.textContent = courseName; // Set the text to course_name
-        courseLinkElement.href = `${window.location.origin}/dashboard/course?course=${courseSlug}`; // Construct the course URL
+
+        // Use proxy URL with fully-qualified URL (like the working example)
+        const fullCourseUrl = `https://nor-staging.webflow.io/dashboard/course?course=${courseSlug}`;
+        courseLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullCourseUrl)}`;
       }
 
       // Set the lesson name and current URL in the breadcrumb
       const activeLinkElement = document.querySelector('[wized="dashboard_lesson_breadCrumb_activeLink"]');
       if (activeLinkElement) {
         activeLinkElement.textContent = lessonName; // Set the text to lesson_name
-        activeLinkElement.href = window.location.href; // Use the current browser URL
+
+        // Use proxy URL with fully-qualified URL (like the working example)
+        const fullLessonUrl = `https://nor-staging.webflow.io/dashboard/lesson?course=${courseSlug}&lesson=${lessonSlug}`;
+        activeLinkElement.href = `/v2/page/proxy?url=${encodeURIComponent(fullLessonUrl)}`;
       }
     })
     .catch(error => {
       console.error("Error occurred while fetching or processing the API response", error);
     });
   }
+
