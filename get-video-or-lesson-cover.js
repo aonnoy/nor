@@ -45,6 +45,8 @@
     .then(data => {
       const videoUrl = data.video_url;
       const lessonCover = data.lesson_cover;
+      const courseName = data.course_name; // New variable for course name
+      const lessonName = data.lesson_name; // New variable for lesson name
 
       // Logic to handle video or lesson cover
       if (lessonCover === null && videoUrl) {
@@ -60,13 +62,13 @@
           coverWrapper.setAttribute("custom-cloak", "");
         }
 
-        // Delay the fade-out for 1.5 seconds
+        // Delay the fade-out for 500 milliseconds
         setTimeout(() => {
           const skeletonLoader = document.querySelector('[wized="dashboard_lesson_media_skeletonLoader"]');
           if (skeletonLoader) {
             skeletonLoader.classList.add("fade-out");
           }
-        }, 500); // 1.5 second delay
+        }, 500); // 500 ms delay
 
       } else if (lessonCover && !videoUrl) {
         // If lessonCover is available and videoUrl is null, update the image
@@ -82,13 +84,27 @@
           vimeoWrapper.setAttribute("custom-cloak", "");
         }
 
-        // Delay the fade-out for 1.5 seconds
+        // Delay the fade-out for 500 milliseconds
         setTimeout(() => {
           const skeletonLoader = document.querySelector('[wized="dashboard_lesson_media_skeletonLoader"]');
           if (skeletonLoader) {
             skeletonLoader.classList.add("fade-out");
           }
-        }, 500); // 1.5 second delay
+        }, 500); // 500 ms delay
+      }
+
+      // Set the course name and URL in the breadcrumb
+      const courseLinkElement = document.querySelector('[wized="dashboard_lesson_breadCrumb_courseLink"]');
+      if (courseLinkElement) {
+        courseLinkElement.textContent = courseName; // Set the text to course_name
+        courseLinkElement.href = `${window.location.origin}/dashboard/course?course=${courseSlug}`; // Construct the course URL
+      }
+
+      // Set the lesson name and current URL in the breadcrumb
+      const activeLinkElement = document.querySelector('[wized="dashboard_lesson_breadCrumb_activeLink"]');
+      if (activeLinkElement) {
+        activeLinkElement.textContent = lessonName; // Set the text to lesson_name
+        activeLinkElement.href = window.location.href; // Use the current browser URL
       }
     })
     .catch(error => {
