@@ -24,10 +24,24 @@ const handleRedirection = (path) => {
     }
 };
 
-// Function to check for the course parameter in the URL
+// Function to check for the course parameter in the URL or Wized environment
 const checkCourseParameter = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('course');
+    const currentOrigin = window.location.origin;
+
+    // If inside Wized environment, check n.parameters for course
+    if (currentOrigin === 'https://server.wized.com') {
+        window.Wized = window.Wized || [];
+        window.Wized.push((Wized) => {
+            const course = Wized.data.n.parameter.course;
+
+            // Return true if course parameter exists
+            return !!course;
+        });
+    } else {
+        // If outside Wized, check URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.has('course');
+    }
 };
 
 // Function to handle the main redirection logic
@@ -60,13 +74,17 @@ const checkUserStatusAndRedirect = () => {
         // If verification and onboarding are true, but dashboard is false
         handleRedirection('/membership/subscription-error');
     } else {
-        // The next step is to check if the "course" parameter exists in the URL
-        if (!checkCourseParameter()) {
-            // If "course" parameter does not exist, redirect to the dashboard home page
-            handleRedirection('/dashboard/home');
-        }
+        // The next step is to check if the "course" parameter exists in the URL or Wized
+        window.Wized = window.Wized || [];
+        window.Wized.push(() => {
+            if (!checkCourseParameter()) {
+                // If "course" parameter does not exist, redirect to the dashboard home page
+                handleRedirection('/dashboard/home');
+            }
+        });
     }
 };
 
 // Execute the function immediately to handle redirection logic
 checkUserStatusAndRedirect();
+
