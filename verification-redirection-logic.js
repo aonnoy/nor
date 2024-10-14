@@ -49,7 +49,7 @@ const checkUserStatusAndRedirect = () => {
             handleRedirection('/auth/onboarding');
         } else if (!dashboardAccess && onboardingStatus && verificationStatus) {
             // If dashboard-access is false, but onboarding-status and verification-status are true
-            handleRedirection('/membership/pick-a-plan');
+            handleRedirection('/membership/subscription-error');
         } else if (dashboardAccess && onboardingStatus && verificationStatus) {
             // If dashboard-access, onboarding-status, and verification-status are all true
             handleRedirection('/dashboard/home');
