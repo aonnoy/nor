@@ -1,33 +1,22 @@
-// Function to get a specific cookie value by name
-const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-    }
-    return null;
-};
-
-// Function to handle redirection based on the origin
-const handleRedirection = (path) => {
+// Function to check for both the course and lesson parameters in the URL or Wized environment
+const checkCourseAndLessonParameters = () => {
     const currentOrigin = window.location.origin;
 
-    // If origin is server.wized.com, use Wized redirection with n.path
+    // If inside Wized environment, check n.parameters for course and lesson
     if (currentOrigin === 'https://server.wized.com') {
         window.Wized = window.Wized || [];
         window.Wized.push((Wized) => {
-            Wized.data.n.path = path; // Use n.path for Wized environment
+            const course = Wized.data.n.parameter.course;
+            const lesson = Wized.data.n.parameter.lesson;
+
+            // Return true if either course or lesson parameter exists
+            return course || lesson;
         });
     } else {
-        // Use regular redirection for other origins
-        window.location.href = path;
+        // If outside Wized, check URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.has('course') || urlParams.has('lesson');
     }
-};
-
-// Function to check for both the course and lesson parameters in the URL
-const checkCourseAndLessonParameters = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('course') || urlParams.has('lesson');
 };
 
 // Function to handle the main redirection logic
@@ -60,11 +49,14 @@ const checkUserStatusAndRedirect = () => {
         // If verification and onboarding are true, but dashboard is false
         handleRedirection('/membership/subscription-error');
     } else {
-        // The next step is to check if the "course" or "lesson" parameters exist in the URL
-        if (!checkCourseAndLessonParameters()) {
-            // If neither "course" nor "lesson" parameter exists, redirect to the dashboard home page
-            handleRedirection('/dashboard/home');
-        }
+        // The next step is to check if the "course" or "lesson" parameters exist in the URL or Wized
+        window.Wized = window.Wized || [];
+        window.Wized.push(() => {
+            if (!checkCourseAndLessonParameters()) {
+                // If neither "course" nor "lesson" parameter exists, redirect to the dashboard home page
+                handleRedirection('/dashboard/home');
+            }
+        });
     }
 };
 
