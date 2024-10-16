@@ -55,9 +55,11 @@ const checkUserStatusAndRedirect = () => {
     } else if (verificationStatus && !dashboardAccess && onboardingStatus) {
         handleRedirection('/membership/subscription-error');
     } else if (verificationStatus && dashboardAccess && onboardingStatus) {
-        handleRedirection('/dashboard/home');
+        // Do nothing, remain on the current page
+        return;
     }
 };
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
+
