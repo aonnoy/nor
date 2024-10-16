@@ -24,13 +24,19 @@ const handleRedirection = (path) => {
     }
 };
 
+// Function to clear localStorage and redirect to homepage
+const clearLocalStorageAndRedirect = () => {
+    localStorage.clear(); // Clear all localStorage data
+    handleRedirection('/'); // Redirect to the homepage
+};
+
 // Function to check conditions and handle redirection for /membership/pick-a-plan page
 const checkUserStatusAndRedirect = () => {
     const authToken = getCookie('auth_token');
 
-    // If auth_token doesn't exist, redirect to the main page
+    // If auth_token doesn't exist, clear localStorage and redirect to the homepage
     if (!authToken) {
-        handleRedirection('/');
+        clearLocalStorageAndRedirect();
     } else {
         // auth_token is present, check localStorage keys
         const verificationStatus = localStorage.getItem('verification-status') === 'true';
@@ -45,6 +51,10 @@ const checkUserStatusAndRedirect = () => {
             // If verification-status is true, but dashboard-access and onboarding-status are false
             // Keep the user on the current page (/membership/pick-a-plan)
             return;
+        } else if (verificationStatus && onboardingStatus && !dashboardAccess) {
+            // If verification-status and onboarding-status are true, but dashboard-access is false
+            // Keep the user on the current page (/membership/pick-a-plan)
+            return;
         } else if (dashboardAccess && onboardingStatus && verificationStatus) {
             // If dashboard-access, onboarding-status, and verification-status are all true
             handleRedirection('/dashboard/home');
@@ -54,6 +64,9 @@ const checkUserStatusAndRedirect = () => {
         }
     }
 };
+
+// Call the function to check for the auth_token and handle redirection
+checkUserStatusAndRedirect();
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
