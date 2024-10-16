@@ -24,13 +24,19 @@ const handleRedirection = (path) => {
     }
 };
 
+// Function to clear localStorage and handle redirection if auth_token is missing
+const clearLocalStorageAndRedirect = () => {
+    localStorage.clear(); // Clear all localStorage data
+    handleRedirection('/'); // Redirect to the homepage
+};
+
 // Function to check conditions and handle redirection on the /auth/onboarding page
 const checkUserStatusAndRedirect = () => {
     const authToken = getCookie('auth_token');
 
-    // If auth_token doesn't exist, redirect immediately to the main page
+    // If auth_token doesn't exist, clear localStorage and redirect immediately to the main page
     if (!authToken) {
-        handleRedirection('/');
+        clearLocalStorageAndRedirect();
         return; // Exit the function to avoid further checks
     }
 
@@ -48,7 +54,7 @@ const checkUserStatusAndRedirect = () => {
         handleRedirection('/membership/pick-a-plan');
     } else if (verificationStatus && !dashboardAccess && onboardingStatus) {
         // If verification-status and onboarding-status are true, but dashboard-access is false
-        handleRedirection('/membership/pick-a-plan');  // Redirect to membership plan page
+        handleRedirection('/membership/subscription-error');  // Redirect to subscription error page
     } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
         // If verification-status and dashboard-access are true, but onboarding-status is false
         // Stay on the current page, no redirection needed
@@ -61,3 +67,4 @@ const checkUserStatusAndRedirect = () => {
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
+
