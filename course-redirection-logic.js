@@ -49,8 +49,9 @@ const checkUserStatusAndRedirect = () => {
     // Check if the auth_token cookie exists
     const authToken = getCookie('auth_token');
 
-    // If auth_token doesn't exist, redirect to the homepage
+    // If auth_token doesn't exist, clear localStorage and redirect to the homepage
     if (!authToken) {
+        localStorage.clear(); // Clear everything from localStorage
         handleRedirection('/');
         return;
     }
@@ -87,4 +88,3 @@ const checkUserStatusAndRedirect = () => {
 
 // Execute the function immediately to handle redirection logic
 checkUserStatusAndRedirect();
-
