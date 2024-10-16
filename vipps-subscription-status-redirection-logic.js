@@ -24,13 +24,19 @@ const handleRedirection = (path) => {
     }
 };
 
+// Function to clear localStorage and redirect to the homepage
+const clearLocalStorageAndRedirect = () => {
+    localStorage.clear(); // Clear all localStorage data
+    handleRedirection('/'); // Redirect to the homepage
+};
+
 // Function to check conditions and handle redirection
 const checkUserStatusAndRedirect = () => {
     const authToken = getCookie('auth_token');
 
-    // If auth_token doesn't exist, redirect immediately to the main page
+    // If auth_token doesn't exist, clear localStorage and redirect immediately to the main page
     if (!authToken) {
-        handleRedirection('/');
+        clearLocalStorageAndRedirect(); // Clear localStorage and redirect
         return; // Exit the function to avoid any further checks
     }
 
