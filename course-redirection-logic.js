@@ -30,22 +30,24 @@ const checkCourseParameter = () => {
 
     // If inside Wized environment, check n.parameters for course
     if (currentOrigin === 'https://server.wized.com') {
-        window.Wized = window.Wized || [];
-        window.Wized.push((Wized) => {
-            const course = Wized.data.n.parameter.course;
+        return new Promise((resolve) => {
+            window.Wized = window.Wized || [];
+            window.Wized.push((Wized) => {
+                const course = Wized.data.n.parameter.course;
 
-            // Return true if course parameter exists
-            return !!course;
+                // Return true if course parameter exists
+                resolve(!!course);
+            });
         });
     } else {
         // If outside Wized, check URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.has('course');
+        return Promise.resolve(urlParams.has('course'));
     }
 };
 
 // Function to handle the main redirection logic
-const checkUserStatusAndRedirect = () => {
+const checkUserStatusAndRedirect = async () => {
     // Check if the auth_token cookie exists
     const authToken = getCookie('auth_token');
 
@@ -76,13 +78,11 @@ const checkUserStatusAndRedirect = () => {
         handleRedirection('/membership/subscription-error');
     } else {
         // The next step is to check if the "course" parameter exists in the URL or Wized
-        window.Wized = window.Wized || [];
-        window.Wized.push(() => {
-            if (!checkCourseParameter()) {
-                // If "course" parameter does not exist, redirect to the dashboard home page
-                handleRedirection('/dashboard/home');
-            }
-        });
+        const courseExists = await checkCourseParameter();
+        if (!courseExists) {
+            // If "course" parameter does not exist, redirect to the dashboard home page
+            handleRedirection('/dashboard/home');
+        }
     }
 };
 
