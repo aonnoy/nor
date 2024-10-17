@@ -30,23 +30,25 @@ const checkCourseAndLessonParameters = () => {
 
     // If inside Wized environment, check n.parameters for course and lesson
     if (currentOrigin === 'https://server.wized.com') {
-        window.Wized = window.Wized || [];
-        window.Wized.push((Wized) => {
-            const course = Wized.data.n.parameter.course;
-            const lesson = Wized.data.n.parameter.lesson;
+        return new Promise((resolve) => {
+            window.Wized = window.Wized || [];
+            window.Wized.push((Wized) => {
+                const course = Wized.data.n.parameter.course;
+                const lesson = Wized.data.n.parameter.lesson;
 
-            // Return true if both course and lesson parameters exist
-            return course && lesson;
+                // Resolve true if both course and lesson parameters exist
+                resolve(!!(course && lesson));
+            });
         });
     } else {
         // If outside Wized, check URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.has('course') && urlParams.has('lesson');
+        return Promise.resolve(urlParams.has('course') && urlParams.has('lesson'));
     }
 };
 
 // Function to handle the main redirection logic
-const checkUserStatusAndRedirect = () => {
+const checkUserStatusAndRedirect = async () => {
     // Check if the auth_token cookie exists
     const authToken = getCookie('auth_token');
 
@@ -77,16 +79,13 @@ const checkUserStatusAndRedirect = () => {
         handleRedirection('/membership/subscription-error');
     } else {
         // The next step is to check if both "course" and "lesson" parameters exist in the URL or Wized
-        window.Wized = window.Wized || [];
-        window.Wized.push(() => {
-            if (!checkCourseAndLessonParameters()) {
-                // If either "course" or "lesson" parameter is missing, redirect to the dashboard home page
-                handleRedirection('/dashboard/home');
-            }
-        });
+        const courseAndLessonExist = await checkCourseAndLessonParameters();
+        if (!courseAndLessonExist) {
+            // If either "course" or "lesson" parameter is missing, redirect to the dashboard home page
+            handleRedirection('/dashboard/home');
+        }
     }
 };
 
 // Execute the function immediately to handle redirection logic
 checkUserStatusAndRedirect();
-
