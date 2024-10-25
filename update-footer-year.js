@@ -5,4 +5,4 @@ const footerTextElement = document.querySelector('[footer-text-update]');
 const currentYear = new Date().getFullYear();
 
 // Update the element's text content with the current year
-footerTextElement.textContent = `© ${currentYear} Nor Agency. All rights reserved.`;
+footerTextElement.textContent = `© ${currentYear} Nor Agency. Alle rettigheter forbeholdt.`;
