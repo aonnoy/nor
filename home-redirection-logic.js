@@ -37,25 +37,21 @@ const checkUserStatusAndRedirect = async () => {
     }
 
     // Get the values of the required localStorage keys
-    const verificationStatus = localStorage.getItem('verification-status') === 'true';
     const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
     const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
 
     // Redirection logic based on the localStorage values
-    if (!verificationStatus && !dashboardAccess && !onboardingStatus) {
-        // If verification, onboarding, and dashboard are all false
-        handleRedirection('/auth/verification');
-    } else if (verificationStatus && !dashboardAccess && !onboardingStatus) {
-        // If verification is true, but dashboard and onboarding are false
+    if (!dashboardAccess && !onboardingStatus) {
+        // If dashboardAccess and onboardingStatus are both false
         handleRedirection('/membership/pick-a-plan');
-    } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
-        // If verification and dashboard are true, but onboarding is false
+    } else if (dashboardAccess && !onboardingStatus) {
+        // If dashboardAccess is true and onboardingStatus is false
         handleRedirection('/auth/onboarding');
-    } else if (verificationStatus && onboardingStatus && !dashboardAccess) {
-        // If verification and onboarding are true, but dashboard is false
+    } else if (!dashboardAccess && onboardingStatus) {
+        // If dashboardAccess is false and onboardingStatus is true
         handleRedirection('/membership/subscription-error');
     }
-    // No redirection if all conditions are satisfied (leave the user where they are)
+    // No redirection if both dashboardAccess and onboardingStatus are true (leave the user where they are)
 };
 
 // Execute the function immediately to handle redirection logic
