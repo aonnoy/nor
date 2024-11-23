@@ -42,7 +42,6 @@ const checkUserStatusAndRedirect = () => {
 
     // Proceed with other checks if the auth_token is present
     const vippsInitiated = localStorage.getItem('vipps-initiated') === 'true';
-    const verificationStatus = localStorage.getItem('verification-status') === 'true';
     const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
     const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
 
@@ -50,17 +49,17 @@ const checkUserStatusAndRedirect = () => {
     if (vippsInitiated) {
         return; // Do nothing, remain on the current page
     } else if (!localStorage.getItem('vipps-initiated')) {
-        // If vipps-initiated doesn't exist, check the verification status
-        if (!verificationStatus) {
-            handleRedirection('/auth/verification');
-        } else if (verificationStatus && !dashboardAccess) {
-            // If verification-status is true and dashboard-access is false
+        // If vipps-initiated doesn't exist, check the dashboard and onboarding status
+        if (!dashboardAccess && !onboardingStatus) {
             handleRedirection('/membership/pick-a-plan');
-        } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
-            // If onboarding-status is false
+        } else if (dashboardAccess && !onboardingStatus) {
+            // If dashboard-access is true and onboarding-status is false
             handleRedirection('/auth/onboarding');
-        } else if (verificationStatus && dashboardAccess && onboardingStatus) {
-            // If all statuses are true
+        } else if (!dashboardAccess && onboardingStatus) {
+            // If dashboard-access is false and onboarding-status is true
+            handleRedirection('/membership/pick-a-plan');
+        } else if (dashboardAccess && onboardingStatus) {
+            // If both dashboard-access and onboarding-status are true
             handleRedirection('/dashboard/home');
         }
     }
