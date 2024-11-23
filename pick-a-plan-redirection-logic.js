@@ -39,34 +39,25 @@ const checkUserStatusAndRedirect = () => {
         clearLocalStorageAndRedirect();
     } else {
         // auth_token is present, check localStorage keys
-        const verificationStatus = localStorage.getItem('verification-status') === 'true';
         const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
         const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
 
         // Handle redirection logic based on localStorage values
-        if (!verificationStatus && !dashboardAccess && !onboardingStatus) {
-            // If verification-status, dashboard-access, and onboarding-status are all false
-            handleRedirection('/auth/verification');
-        } else if (verificationStatus && !dashboardAccess && !onboardingStatus) {
-            // If verification-status is true, but dashboard-access and onboarding-status are false
-            // Keep the user on the current page (/membership/pick-a-plan)
+        if (!dashboardAccess && !onboardingStatus) {
+            // If dashboard-access and onboarding-status are both false, keep the user where they are
             return;
-        } else if (verificationStatus && onboardingStatus && !dashboardAccess) {
-            // If verification-status and onboarding-status are true, but dashboard-access is false
-            // Keep the user on the current page (/membership/pick-a-plan)
-            return;
-        } else if (dashboardAccess && onboardingStatus && verificationStatus) {
-            // If dashboard-access, onboarding-status, and verification-status are all true
-            handleRedirection('/dashboard/home');
-        } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
-            // If verification-status and dashboard-access are true, but onboarding-status is false
+        } else if (dashboardAccess && !onboardingStatus) {
+            // If dashboard-access is true and onboarding-status is false, redirect to onboarding page
             handleRedirection('/auth/onboarding');
+        } else if (!dashboardAccess && onboardingStatus) {
+            // If dashboard-access is false and onboarding-status is true, keep the user where they are
+            return;
+        } else if (dashboardAccess && onboardingStatus) {
+            // If dashboard-access and onboarding-status are both true, redirect to dashboard home
+            handleRedirection('/dashboard/home');
         }
     }
 };
-
-// Call the function to check for the auth_token and handle redirection
-checkUserStatusAndRedirect();
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
