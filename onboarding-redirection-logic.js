@@ -41,26 +41,22 @@ const checkUserStatusAndRedirect = () => {
     }
 
     // Proceed with other checks if the auth_token is present
-    const verificationStatus = localStorage.getItem('verification-status') === 'true';
     const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
     const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
 
     // Logic for redirection based on localStorage values
-    if (!verificationStatus && !onboardingStatus && !dashboardAccess) {
-        // If verification-status, onboarding-status, and dashboard-access are all false
-        handleRedirection('/auth/verification');
-    } else if (verificationStatus && !onboardingStatus && !dashboardAccess) {
-        // If verification-status is true, but onboarding-status and dashboard-access are false
+    if (!dashboardAccess && !onboardingStatus) {
+        // If dashboard-access and onboarding-status are both false
         handleRedirection('/membership/pick-a-plan');
-    } else if (verificationStatus && !dashboardAccess && onboardingStatus) {
-        // If verification-status and onboarding-status are true, but dashboard-access is false
-        handleRedirection('/membership/subscription-error');  // Redirect to subscription error page
-    } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
-        // If verification-status and dashboard-access are true, but onboarding-status is false
+    } else if (dashboardAccess && !onboardingStatus) {
+        // If dashboard-access is true and onboarding-status is false
         // Stay on the current page, no redirection needed
         return;
-    } else if (verificationStatus && dashboardAccess && onboardingStatus) {
-        // If all statuses are true, redirect to the dashboard home
+    } else if (!dashboardAccess && onboardingStatus) {
+        // If dashboard-access is false and onboarding-status is true
+        handleRedirection('/membership/pick-a-plan');
+    } else if (dashboardAccess && onboardingStatus) {
+        // If both dashboard-access and onboarding-status are true
         handleRedirection('/dashboard/home');
     }
 };
