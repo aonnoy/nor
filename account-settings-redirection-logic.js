@@ -41,25 +41,24 @@ const checkUserStatusAndRedirect = () => {
     }
 
     // Proceed with other checks if the auth_token is present
-    const verificationStatus = localStorage.getItem('verification-status') === 'true';
     const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
     const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
 
     // Check various status conditions for redirection
-    if (!verificationStatus && !dashboardAccess && !onboardingStatus) {
-        handleRedirection('/auth/verification');
-    } else if (verificationStatus && !dashboardAccess && !onboardingStatus) {
+    if (!dashboardAccess && !onboardingStatus) {
+        // If both dashboardAccess and onboardingStatus are false
         handleRedirection('/membership/pick-a-plan');
-    } else if (verificationStatus && dashboardAccess && !onboardingStatus) {
+    } else if (dashboardAccess && !onboardingStatus) {
+        // If dashboardAccess is true and onboardingStatus is false
         handleRedirection('/auth/onboarding');
-    } else if (verificationStatus && !dashboardAccess && onboardingStatus) {
+    } else if (!dashboardAccess && onboardingStatus) {
+        // If dashboardAccess is false and onboardingStatus is true
         handleRedirection('/membership/subscription-error');
-    } else if (verificationStatus && dashboardAccess && onboardingStatus) {
-        // Do nothing, remain on the current page
+    } else if (dashboardAccess && onboardingStatus) {
+        // If both dashboardAccess and onboardingStatus are true, do nothing, remain on the current page
         return;
     }
 };
 
 // Call the function to check for the auth_token and handle redirection
 checkUserStatusAndRedirect();
-
