@@ -11,7 +11,6 @@ const getCookie = (name) => {
 // Function to handle redirection based on the origin
 const handleRedirection = (path) => {
     const currentOrigin = window.location.origin;
-
     // If origin is server.wized.com, use Wized redirection with n.path
     if (currentOrigin === 'https://server.wized.com') {
         window.Wized = window.Wized || [];
@@ -24,17 +23,16 @@ const handleRedirection = (path) => {
     }
 };
 
-// Function to clear localStorage and redirect to the homepage
+// Function to clear localStorage and redirect to the login page
 const clearLocalStorageAndRedirect = () => {
     localStorage.clear(); // Clear all localStorage data
-    handleRedirection('/'); // Redirect to the homepage
+    handleRedirection('/auth/redirect-to-login'); // Redirect to the login page instead of homepage
 };
 
 // Function to check conditions and handle redirection
 const checkUserStatusAndRedirect = () => {
     const authToken = getCookie('auth_token');
-
-    // If auth_token doesn't exist, clear localStorage and redirect to the main page
+    // If auth_token doesn't exist, clear localStorage and redirect to the login page
     if (!authToken) {
         clearLocalStorageAndRedirect(); // Clear localStorage and redirect
     } else {
@@ -42,7 +40,7 @@ const checkUserStatusAndRedirect = () => {
         const verificationStatus = localStorage.getItem('verification-status') === 'true';
         const dashboardAccess = localStorage.getItem('dashboard-access') === 'true';
         const onboardingStatus = localStorage.getItem('onboarding-status') === 'true';
-
+        
         // Handle redirection logic based on localStorage values
         if (!verificationStatus) {
             // If verification-status is false, no redirection is needed
