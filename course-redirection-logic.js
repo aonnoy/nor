@@ -54,7 +54,7 @@ const checkUserStatusAndRedirect = async () => {
     // If auth_token doesn't exist, clear localStorage and redirect to the homepage
     if (!authToken) {
         localStorage.clear(); // Clear everything from localStorage
-        handleRedirection('/');
+        handleRedirection('/auth/redirect-to-login');
         return;
     }
 
