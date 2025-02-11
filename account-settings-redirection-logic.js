@@ -27,7 +27,7 @@ const handleRedirection = (path) => {
 // Function to clear localStorage and redirect to the homepage
 const clearLocalStorageAndRedirect = () => {
     localStorage.clear(); // Clear everything from localStorage
-    handleRedirection('/'); // Redirect to homepage
+    handleRedirection('/auth/redirect-to-login'); // Redirect to homepage
 };
 
 // Function to check conditions and handle redirection
