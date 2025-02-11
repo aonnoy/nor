@@ -27,7 +27,7 @@ const handleRedirection = (path) => {
 // Function to clear localStorage and handle redirection if auth_token is missing
 const clearLocalStorageAndRedirect = () => {
     localStorage.clear(); // Clear all localStorage data
-    handleRedirection('/'); // Redirect to the homepage
+    handleRedirection('/auth/redirect-to-login'); // Redirect to the homepage
 };
 
 // Function to check conditions and handle redirection on the /auth/onboarding page
